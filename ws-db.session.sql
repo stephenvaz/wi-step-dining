@@ -63,3 +63,17 @@ ORDER BY start_time
 LIMIT 1;
 
 SELECT * from Slots;
+
+-- DELETE FROM Slots WHERE id = 5;
+
+CREATE TABLE UserSlots (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    slot_id INT NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES Users(id),
+    FOREIGN KEY (slot_id) REFERENCES Slots(id)
+);
+
+
+SELECT * FROM UserSlots;
+

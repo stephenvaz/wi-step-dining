@@ -1,4 +1,7 @@
 import DiningModel from "../models/dining.js";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
 const diningModel = new DiningModel();
 
@@ -132,7 +135,63 @@ class DiningController {
                 status_code: 500
             });
         }
+    }
 
+    book = async (req, res) => {
+        try {
+        const { place_id, start_time, end_time } = req.body;
+        let token = req.headers.authorization;
+        // console.log(token);
+        token = token.slice(7);
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const decoded = jwt.verify(token, process.env.SECRET_KEY);
+        if (!decoded) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+        const user_id = decoded.id;
+
+
+        if (!place_id || !start_time || !end_time) {
+            return res.status(400).json({ message: "Please provide all fields" });
+        }
+
+        const data = await diningModel.checkAvailability(place_id, start_time, end_time);
+        if (data.length === 0) {
+            const mBooking = [
+                {
+                    place_id: place_id,
+                    start_time: start_time,
+                    end_time: end_time
+                }
+            ];
+            const booking = await diningModel.addBookings(place_id, mBooking);
+            // console.log(booking);
+            const userBook = await diningModel.insertUserSlot(user_id, booking.insertId);
+            
+
+            return res.status(201).json({
+                "status": "Slot booked successfully",
+                "status_code": 201,
+                "booking_id": booking.insertId
+            });
+        }
+        else {
+            return res.status(400).json({
+                "status": "Slot is not available at this moment, please try some other place",
+                "status_code": 400,
+            });
+        }}
+        catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                message: "Error booking slot",
+                error: error.message ?? "Error",
+                status_code: 500
+            });
+        }
     }
 }
 

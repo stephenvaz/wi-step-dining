@@ -119,6 +119,24 @@ class DiningModel {
             );
         });
     }
+
+    async insertUserSlot (user_id, slot_id) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                INSERT INTO UserSlots (user_id, slot_id) VALUES (?, ?);
+            `;
+            db.query(
+                query,
+                [user_id, slot_id],
+                (err, result) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(result);
+                }
+            );
+        });
+    }
 }
 
 export default DiningModel;

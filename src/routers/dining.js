@@ -11,4 +11,6 @@ diningRouter.get('/', diningController.seachByName);
 
 diningRouter.get('/availability', diningController.availabillity);
 
+diningRouter.post('/book', diningController.book);
+
 export default diningRouter;
