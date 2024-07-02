@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import AuthController from './contollers/auth.js';
+import AuthController from './controllers/auth.js';
 import diningRouter from './routers/dining.js';
 
 const app = express();
