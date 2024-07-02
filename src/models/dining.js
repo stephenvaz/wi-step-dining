@@ -71,6 +71,54 @@ class DiningModel {
             );
         });
     }
+
+    async checkAvailability (restaurant_id, start_time, end_time) {
+        return new Promise((resolve, reject) => {
+            const cleanedStartTime = start_time.slice(0, 19).replace('T', ' ');
+            const cleanedEndTime = end_time.slice(0, 19).replace('T', ' ');
+            const query = `
+                SELECT * FROM
+                    Slots
+                WHERE restaurant_id = ? AND
+                start_time < '${cleanedEndTime}' AND end_time > '${cleanedStartTime}'
+                ORDER BY start_time
+                LIMIT 1;
+            `;
+            db.query(
+                query,
+                [restaurant_id, start_time, end_time],
+                (err, result) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(result);
+                }
+            );
+        });
+    }
+
+    async getDetails (place_id) {
+        return new Promise((resolve, reject) => {
+            const query = `
+                SELECT 
+                    id AS place_id,
+                    name, phone_no
+                FROM 
+                    Restaurants
+                WHERE id = ?; 
+            `;
+            db.query(
+                query,
+                [place_id],
+                (err, result) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    resolve(result);
+                }
+            );
+        });
+    }
 }
 
 export default DiningModel;

@@ -48,3 +48,18 @@ Restaurants as r
 JOIN Slots as s
 ON r.id = s.restaurant_id
 WHERE r.name LIKE '%Gat%'; 
+
+-- "place_id": "12345",
+-- 7 "start_time": 2023-01-01T16:00:00Z,
+-- 8 "end_time": 2023-01-01T18:00:00Z
+
+SELECT * FROM
+Slots
+WHERE restaurant_id = 21
+AND 
+-- start_time AND end_time BETWEEN "2023-01-01 16:00:00" AND "2023-01-01 18:00:00" 
+start_time < "2023-01-01 15:00:00" AND end_time > "2023-01-01 14:00:00"
+ORDER BY start_time
+LIMIT 1;
+
+SELECT * from Slots;

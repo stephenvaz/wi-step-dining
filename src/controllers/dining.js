@@ -96,7 +96,43 @@ class DiningController {
         if (!place_id || !start_time || !end_time) {
             return res.status(400).json({ message: "Please provide all fields" });
         }
-        
+
+        try {
+            const data = await diningModel.checkAvailability(place_id, start_time, end_time);
+            const restaurant = await diningModel.getDetails(place_id);
+            if (data.length === 0) {
+                return res.status(200).json({
+                    "status_code": 200,
+                    "place_id": place_id,
+                    "name": restaurant[0].name,
+                    "phone_no": restaurant[0].phone_no,
+                    "available": true,
+                    "next_available_slot": null
+                });
+            }
+            else {
+                // console.log(data[0]);
+                data[0].end_time = new Date(data[0].end_time).toLocaleString()
+
+                return res.status(200).json({
+                    "status_code": 200,
+                    "place_id": place_id,
+                    "name": restaurant[0].name,
+                    "phone_no": restaurant[0].phone_no,
+                    "available": false,
+                    "next_available_slot": data[0].end_time
+                });
+            }
+
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                message: "Error fetching data",
+                error: error.message ?? "Error",
+                status_code: 500
+            });
+        }
+
     }
 }
 
